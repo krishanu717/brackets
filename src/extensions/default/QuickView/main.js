@@ -179,7 +179,11 @@ define(function (require, exports, module) {
 
         // Check for gradient. -webkit-gradient() can have parens in parameters
         // nested 2 levels. Other gradients can only nest 1 level.
-        var gradientRegEx = /-webkit-gradient\((?:[^\(]*?(?:\((?:[^\(]*?(?:\([^\)]*?\))*?)*?\))*?)*?\)|(?:(?:-moz-|-ms-|-o-|-webkit-|:|\s)((repeating-)?linear-gradient)|(?:-moz-|-ms-|-o-|-webkit-|:|\s)((repeating-)?radial-gradient))(\((?:[^\)]*?(?:\([^\)]*?\))*?)*?\))/gi,
+    // Simpler, safer gradient regex: avoid exponential backtracking by not
+    // trying to fully match arbitrarily nested parentheses. This matches
+    // common gradient forms and their argument lists without supporting
+    // deeply-nested function calls inside the parens.
+    var gradientRegEx = /-webkit-gradient\([^)]*\)|(?:(?:-moz-|-ms-|-o-|-webkit-|:|\s)(?:(?:repeating-)?linear-gradient|(?:repeating-)?radial-gradient)\s*\([^)]*\))/gi,
             colorRegEx    = new RegExp(ColorUtils.COLOR_REGEX),
             mode          = TokenUtils.getModeAt(editor._codeMirror, pos, false),
             isStyleSheet  = (styleLanguages.indexOf(mode) !== -1);

@@ -416,7 +416,10 @@ define(function (require, exports, module) {
         function getIdToTagMap(instrumentedHTML, map) {
             var count = 0;
 
-            var elementIdRegEx = /<(\w+?)\s+(?:[^<]*?\s)*?data-brackets-id='(\S+?)'/gi,
+            // Safer element ID regex: avoid nested quantified lazy patterns that can
+            // catastrophically backtrack on long/attacker inputs. Match tag name, then
+            // scan attributes up to the closing '>' and look for data-brackets-id.
+            var elementIdRegEx = /<(\w+)\b[^>]*\bdata-brackets-id='(\S+?)'/gi,
                 match,
                 tagID,
                 tagName;

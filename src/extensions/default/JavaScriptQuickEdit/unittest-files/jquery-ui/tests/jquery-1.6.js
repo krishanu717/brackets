@@ -3974,7 +3974,11 @@ var Expr = Sizzle.selectors = {
 		TAG: /^((?:[\w\u00c0-\uFFFF\*\-]|\\.)+)/,
 		CHILD: /:(only|nth|last|first)-child(?:\(\s*(even|odd|(?:[+\-]?\d+|(?:[+\-]?\d*)?n\s*(?:[+\-]\s*\d+)?))\s*\))?/,
 		POS: /:(nth|eq|gt|lt|first|last|even|odd)(?:\((\d*)\))?(?=[^\-]|$)/,
-		PSEUDO: /:((?:[\w\u00c0-\uFFFF\-]|\\.)+)(?:\((['"]?)((?:\([^\)]+\)|[^\(\)]*)+)\2\))?/
+		// Reduced-risk variant: avoid nested-parentheses backtracking by
+		// not attempting to fully match arbitrarily nested parentheses inside the
+		// pseudo-class arguments. This keeps behavior for common cases while
+		// eliminating catastrophic backtracking on malicious inputs.
+		PSEUDO: /:((?:[\w\u00c0-\uFFFF\-]|\\.)+)(?:\((['"]?)((?:\\.|[^()'"\\])*)\2\))?/
 	},
 
 	leftMatch: {},
